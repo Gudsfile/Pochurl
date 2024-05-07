@@ -3,7 +3,7 @@ from typing import List
 from fastapi import FastAPI
 from pydantic import AnyHttpUrl
 
-from pochurl.core.storage import read_item_by_url, read_items, read_items_by_name, write_item
+from pochurl.core import read_item_by_url, read_items, read_items_by_name, write_item
 from pochurl.domain import GivenElement, SavedElement
 
 

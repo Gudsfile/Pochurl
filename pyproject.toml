@@ -10,6 +10,8 @@ python = "^3.12"
 fastapi = "^0.111.0"
 pydantic = "^2.7.1"
 tinydb = "^4.8.0"
+google-cloud-firestore = "^2.16.0"
+firebase-admin = "^6.5.0"
 
 [build-system]
 requires = ["poetry-core"]
