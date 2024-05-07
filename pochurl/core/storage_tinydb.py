@@ -8,7 +8,7 @@ from pydantic import AnyHttpUrl
 from pochurl.domain import GivenElement, SavedElement
 
 
-db = TinyDB('db.json')
+db = TinyDB('pochurl-tinydb.json')
 
 
 def read_item_by_url(url: AnyHttpUrl):
