@@ -11,27 +11,38 @@ from pochurl.domain import GivenElement, SavedElement
 db = TinyDB('pochurl-tinydb.json')
 
 
-def read_item_by_url(url: AnyHttpUrl):
+def read_items_by_url(url: AnyHttpUrl):
     Element = Query()
-    condition = Element.url == str(url)
-    previous = db.get(condition)
-    return SavedElement(**previous) if previous else {}
+    condition = Query().url.test(_test_str_contains, str(url))
+    previous = db.search(condition)
+    return [SavedElement(**(dict(p) | {'id': str(p.doc_id)})) for p in previous] if previous else None
 
 def read_items_by_name(name: str):
     Element = Query()
-    def test_func(val, name):
-        return (name.lower() in val.lower()) if name else True
-    condition = Element.name.test(test_func, name)
+    condition = Query().name.test(_test_str_contains, name)
     previous = db.search(condition)
-    return [SavedElement(**p) for p in previous] if previous else []
+    return [SavedElement(**(dict(p) | {'id': str(p.doc_id)})) for p in previous] if previous else None
+
+def read_item(id: str):
+    previous = db.get(doc_id=id)
+    return SavedElement(**(dict(previous) | {'id': id})) if previous else None
 
 def read_items():
     previous = db.all()
-    return [SavedElement(**p) for p in previous] if previous else []
+    print(previous)
+    return [SavedElement(**(dict(p) | {'id': str(p.doc_id)})) for p in previous] if previous else None
 
 def write_item(element: GivenElement):
-    Element = Query()
-    previous = db.get(Element.url == str(element.url))
+    id = db.insert(json.loads(element.json()) | {'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')})
+    return str(id)
+
+def rewrite_item(id: str, element: GivenElement):
+    previous = read_item(id)
     if previous:
-        return db.upsert(Document(json.loads(element.json()), doc_id = previous.doc_id))
-    return db.insert(json.loads(element.json()) | {'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')})
+        db.upsert(Document(json.loads(element.json()), doc_id = int(id)))
+        return id
+    print(f'no id={id} yet')
+    return None
+
+def _test_str_contains(val, string):
+    return string.lower() in val.lower()
