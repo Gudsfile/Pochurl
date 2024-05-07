@@ -31,7 +31,7 @@ def list_items() -> List[SavedElement]:
 
 
 @app.get('/get/element/{id}')
-def get_item(id: str) -> SavedElement:
+def get_item(id: str) -> SavedElement | None:
     return read_item(id)
 
 
