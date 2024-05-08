@@ -1,13 +1,17 @@
 import json
+import logging
 from datetime import datetime
 from typing import List
 
-from tinydb import TinyDB, Query
-from tinydb.table import Document
 from pydantic import AnyHttpUrl
+from tinydb import Query, TinyDB
+from tinydb.table import Document
 
 from pochurl.core.storage import Storage
 from pochurl.domain import GivenElement, SavedElement
+
+
+logger = logging.getLogger(__name__)
 
 
 class TinyDbStorage(Storage):
@@ -40,7 +44,7 @@ class TinyDbStorage(Storage):
         if previous:
             self.db.upsert(Document(json.loads(element.json()), doc_id = int(id)))
             return id
-        print(f'no id={id} yet')
+        logger.warning('no id=%s yet', id)
         return None
 
 

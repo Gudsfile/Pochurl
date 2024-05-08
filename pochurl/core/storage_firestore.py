@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 from typing import List
 
@@ -9,6 +10,9 @@ from pydantic import AnyHttpUrl
 
 from pochurl.core.storage import Storage
 from pochurl.domain import GivenElement, SavedElement
+
+
+logger = logging.getLogger(__name__)
 
 
 class FireStoreStorage(Storage):
@@ -47,5 +51,5 @@ class FireStoreStorage(Storage):
             timestamp = previous.timestamp if previous else datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
             new.set(json.loads(element.json()) | {'timestamp': timestamp})
             return new.id
-        print(f'no id={id} yet')
+        logging.warning('no id=%s yet', id)
         return None

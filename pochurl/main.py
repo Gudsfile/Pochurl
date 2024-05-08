@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from fastapi import Depends, FastAPI
@@ -6,6 +7,11 @@ from pydantic import AnyHttpUrl
 from pochurl.core import get_db
 from pochurl.domain import GivenElement, SavedElement
 
+
+LEVEL = logging.INFO
+logger = logging.getLogger()
+FORMAT = '%(levelname)s: %(filename)s - %(message)s'
+logging.basicConfig(format=FORMAT, level=LEVEL)
 
 app = FastAPI(
     title='Pochurl',
