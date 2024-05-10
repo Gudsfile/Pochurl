@@ -1,16 +1,16 @@
 import logging
-from typing import List
 
-from fastapi import Depends, FastAPI
-from pydantic import AnyHttpUrl
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from fastui import prebuilt_html
 
-from pochurl.core import get_db
-from pochurl.domain import GivenElement, SavedElement
+from pochurl.api import router as api_router
+from pochurl.ui import router as ui_router
 
 
 LEVEL = logging.INFO
-logger = logging.getLogger()
 FORMAT = '%(levelname)s: %(filename)s - %(message)s'
+logger = logging.getLogger()
 logging.basicConfig(format=FORMAT, level=LEVEL)
 
 app = FastAPI(
@@ -18,37 +18,10 @@ app = FastAPI(
     description='App to save and organize links',
 )
 
-
-@app.get('/')
-def read_root():
-    return {'Hello': 'World'}
+app.include_router(api_router)
+app.include_router(ui_router)
 
 
-@app.get('/get/element/{id}')
-def get_item(id: str, db = Depends(get_db)) -> SavedElement | None:
-    return db.read_item(id)
-
-
-@app.get('/get/list/')
-def list_items(db = Depends(get_db)) -> List[SavedElement]:
-    return db.read_items()
-
-
-@app.get('/get/url/')
-def get_items_by_url(url: AnyHttpUrl, db = Depends(get_db)) -> List[SavedElement]:
-    return db.read_items_by_url(url)
-
-
-@app.get('/get/name/')
-def get_items_by_name(name: str, db = Depends(get_db)) -> List[SavedElement]:
-    return db.read_items_by_name(name)
-
-
-@app.put('/add/')
-def add_item(element: GivenElement, db = Depends(get_db)) -> str:
-    return db.write_item(element)
-
-
-@app.put('/update/element/{id}')
-def update_item(id: str, element: GivenElement, db = Depends(get_db)) -> str | None:
-    return db.rewrite_item(id, element)
+@app.get('/', include_in_schema=False)
+def html_landing() -> HTMLResponse:
+    return HTMLResponse(prebuilt_html(title='Pochurl', api_root_url='/ui'))
