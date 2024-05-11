@@ -1,0 +1,63 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+env:
+  POETRY_HOME: /opt/poetry
+  POETRY_VERSION: 1.8.3
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.12
+    - name: Set up Poetry cache
+      id: cache-poetry
+      uses: actions/cache@v4
+      with:
+        path: /opt/poetry
+        key: ${{ runner.os }}-poetry
+    - name: Install Poetry
+      if: steps.cache-poetry.outputs.cache-hit != 'true'
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        export PATH="/opt/poetry/bin:$PATH"
+        poetry --version
+    - name: Set up Poetry dependencies cache
+      uses: actions/cache@v4
+      id: cached-poetry-dependencies
+      with:
+        path: .venv
+        key: ${{ runner.os }}-venv
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: |
+        /opt/poetry/bin/poetry --version
+        /opt/poetry/bin/poetry config --local virtualenvs.in-project true
+        /opt/poetry/bin/poetry install
+        /opt/poetry/bin/poetry run pip install flake8
+        # /opt/poetry/bin/poetry self add flake8
+    - name: Lint with flake8
+      run: |
+        /opt/poetry/bin/poetry run flake8 pochurl/ --count --ignore E501  --show-source --statistics
+        /opt/poetry/bin/poetry run flake8 pochurl/ --count --exit-zero --select E501 --max-complexity=10 --max-line-length=120 --statistics
+        /opt/poetry/bin/poetry run flake8 tests/ --count --ignore E501  --show-source --statistics
+    - name: Test with pytest
+      run: |
+        /opt/poetry/bin/poetry run pytest -vv
