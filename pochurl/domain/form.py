@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import AnyHttpUrl, BaseModel
 
 
-TagList = Literal['👀', '✨', '🚨', '🔥', '🗞️', '🗑️', '🤡', '👻']
+TagList = Literal["👀", "✨", "🚨", "🔥", "🗞️", "🗑️", "🤡", "👻"]
 
 
 class GivenElementForm(BaseModel):

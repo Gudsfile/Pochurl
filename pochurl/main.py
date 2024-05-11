@@ -9,19 +9,19 @@ from pochurl.ui import router as ui_router
 
 
 LEVEL = logging.INFO
-FORMAT = '%(levelname)s: %(filename)s - %(message)s'
+FORMAT = "%(levelname)s: %(filename)s - %(message)s"
 logger = logging.getLogger()
 logging.basicConfig(format=FORMAT, level=LEVEL)
 
 app = FastAPI(
-    title='Pochurl',
-    description='App to save and organize links',
+    title="Pochurl",
+    description="App to save and organize links",
 )
 
 app.include_router(api_router)
 app.include_router(ui_router)
 
 
-@app.get('/', include_in_schema=False)
+@app.get("/", include_in_schema=False)
 def html_landing() -> HTMLResponse:
-    return HTMLResponse(prebuilt_html(title='Pochurl', api_root_url='/ui'))
+    return HTMLResponse(prebuilt_html(title="Pochurl", api_root_url="/ui"))

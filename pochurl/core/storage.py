@@ -11,7 +11,7 @@ from pochurl.domain import GivenElement, SavedElement
 class Storage(ABC):
 
     @abstractmethod
-    def read_item(self, id: str) -> SavedElement | None:
+    def read_item(self, element_id: str) -> SavedElement | None:
         pass
 
     @abstractmethod
@@ -31,7 +31,7 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    def rewrite_item(self, id: str, element: GivenElement) -> str | None:
+    def rewrite_item(self, element_id: str, element: GivenElement) -> str | None:
         pass
 
 
@@ -40,15 +40,16 @@ def log(_func=None, *, logger: logging.Logger):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             args_repr = [repr(a) for a in args]
-            kwargs_repr = [f'{k}={v!r}' for k, v in kwargs.items()]
-            signature = ', '.join(args_repr[1:] + kwargs_repr)
-            logger.info(f'function {func.__name__} called with args `{signature}`')
+            kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
+            signature = ", ".join(args_repr[1:] + kwargs_repr)
+            logger.info(f"function {func.__name__} called with args `{signature}`")
             try:
                 result = func(*args, **kwargs)
                 return result
             except Exception as e:
-                logger.exception(f'Exception raised in {func.__name__}. exception: {str(e)}')
+                logger.exception(f"Exception raised in {func.__name__}. exception: {str(e)}")
                 raise e
+
         return wrapper
 
     if _func is None:
