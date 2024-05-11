@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 class TinyDbStorage(Storage):
-    db = TinyDB('pochurl-tinydb.json')
+    db = TinyDB("pochurl-tinydb.json")
 
     @log(logger=logger)
-    def read_item(self, id: str) -> SavedElement | None:
-        previous = self.db.get(doc_id=id)
-        return SavedElement(id=id, **dict(previous)) if previous else None
+    def read_item(self, element_id: str) -> SavedElement | None:
+        previous = self.db.get(doc_id=element_id)
+        return SavedElement(id=element_id, **dict(previous)) if previous else None
 
     @log(logger=logger)
     def read_items(self) -> List[SavedElement]:
@@ -41,16 +41,16 @@ class TinyDbStorage(Storage):
 
     @log(logger=logger)
     def write_item(self, element: GivenElement) -> str:
-        id = self.db.insert(json.loads(element.json()) | {'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')})
-        return str(id)
+        element_id = self.db.insert(json.loads(element.json()) | {"timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")})
+        return str(element_id)
 
     @log(logger=logger)
-    def rewrite_item(self, id: str, element: GivenElement) -> str | None:
-        previous = self.read_item(id)
+    def rewrite_item(self, element_id: str, element: GivenElement) -> str | None:
+        previous = self.read_item(element_id)
         if previous:
-            self.db.upsert(Document(json.loads(element.json()), doc_id=int(id)))
-            return id
-        logger.warning('no id=%s yet', id)
+            self.db.upsert(Document(json.loads(element.json()), doc_id=int(element_id)))
+            return element_id
+        logger.warning("no id=%s yet", element_id)
         return None
 
 
