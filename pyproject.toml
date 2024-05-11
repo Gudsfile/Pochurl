@@ -2,7 +2,7 @@
 name = "pochurl"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["Gudsfile <gudsfile@protonmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
