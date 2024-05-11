@@ -48,7 +48,7 @@ class TinyDbStorage(Storage):
     def rewrite_item(self, id: str, element: GivenElement) -> str | None:
         previous = self.read_item(id)
         if previous:
-            self.db.upsert(Document(json.loads(element.json()), doc_id = int(id)))
+            self.db.upsert(Document(json.loads(element.json()), doc_id=int(id)))
             return id
         logger.warning('no id=%s yet', id)
         return None

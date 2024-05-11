@@ -72,7 +72,7 @@ def show_items(page: int = 1, tag: str | None = None) -> List[AnyComponent]:
                 ),
 
                 c.Table(
-                    data=elements[(page - 1) * page_size : page * page_size],
+                    data=elements[(page - 1) * page_size:page * page_size],
                     data_model=SavedElement,
                     columns=[
                         DisplayLookup(field='id', on_click=GoToEvent(url='/element/{id}')),

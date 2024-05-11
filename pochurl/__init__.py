@@ -1,1 +1,1 @@
-from pochurl.main import app
+import pochurl.main
