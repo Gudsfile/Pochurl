@@ -34,6 +34,7 @@ def test_get_item_no_result():
     assert response.status_code == 200
     assert response.json() is None
 
+
 def test_get_item_one_result():
     """
     For a non empty storage, /api/element/{id} should return the url concerned
@@ -44,14 +45,16 @@ def test_get_item_one_result():
     assert response.status_code == 200
     assert response.json() == expected_from_one_element[0]
 
+
 def test_get_item_multiple_results():
     """
     /api/element/{id} should raise an error if many element are returned
     """
     mock_db.read_item = MagicMock(return_value=many_elements)
     app.dependency_overrides[get_db] = lambda: mock_db
-    with pytest.raises(ResponseValidationError) as err:
+    with pytest.raises(ResponseValidationError) as _:
         client.get('/api/element/dummy-id')
+
 
 def test_get_items_by_url_no_result():
     """
@@ -63,6 +66,7 @@ def test_get_items_by_url_no_result():
     assert response.status_code == 200
     assert response.json() == []
 
+
 def test_get_items_by_url_one_result():
     """
     For a non empty storage, /api/elements/url/ should return the url concerned
@@ -72,6 +76,7 @@ def test_get_items_by_url_one_result():
     response = client.get('/api/elements/url/', params={'url': 'http://dummy.param'})
     assert response.status_code == 200
     assert response.json() == expected_from_one_element
+
 
 def test_get_items_by_url_multiple_results():
     """

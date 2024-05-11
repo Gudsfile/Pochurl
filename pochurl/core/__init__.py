@@ -1,5 +1,4 @@
 import logging
-import sys
 from typing import Literal
 
 from pochurl.core.storage import Storage
