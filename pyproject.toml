@@ -2,18 +2,20 @@
 name = "pochurl"
 version = "0.1.0"
 description = ""
-authors = ["Gudsfile <gudsfile@protonmail.com>"]
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.111.0"
 pydantic = "^2.7.1"
+fastapi = "^0.111.0"
+fastui = "^0.6.0"
 tinydb = "^4.8.0"
 google-cloud-firestore = "^2.16.0"
 firebase-admin = "^6.5.0"
+
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
-fastui = "^0.6.0"
 pylint = "^3.1.0"
 black = "^24.4.2"
 
