@@ -13,7 +13,6 @@ from pochurl import api
 from pochurl.core import get_db
 from pochurl.domain import GivenElement, GivenElementForm, SavedElement, TagFilterForm
 
-
 logger = logging.getLogger(__name__)
 db = get_db("tinydb")
 router = APIRouter(
@@ -30,6 +29,28 @@ PAGE_EVENT_ADDED = "show-toast-added"
 @cache
 def elements_list():
     return api.get_items(db)
+
+
+from collections import defaultdict
+
+from fastapi import Request
+from fastui.forms import SelectSearchResponse
+from pydantic import BaseModel, Field
+
+
+class NewTagFilterForm(BaseModel):
+    tag: str = Field(json_schema_extra={"search_url": "/ui/forms-search-tags", "placeholder": "Select a tag..."})
+
+
+@router.get("/forms-search-tags")
+def search_view(request: Request, q: str) -> SelectSearchResponse:
+    imported_options = set(sum([list(element.tags) for element in elements_list()], []))
+    options = [("default", emoji) for emoji in ["👀", "✨", "🚨", "🔥", "🗞️", "🗑️", "🤡", "👻"]] + [("imported", emoji) for emoji in imported_options]
+    regions = defaultdict(list)
+    for co in options:
+        regions[co[0]].append({"value": co[1], "label": co[1]})
+    options = [{"label": k, "options": v} for k, v in regions.items()]
+    return SelectSearchResponse(options=options)
 
 
 @router.get("/", response_model=FastUI, response_model_exclude_none=True)
@@ -58,7 +79,7 @@ def show_items(page: int = 1, tag: str | None = None) -> List[AnyComponent]:
                     position="bottom-end",
                 ),
                 c.ModelForm(
-                    model=TagFilterForm,
+                    model=NewTagFilterForm,
                     submit_url=".",
                     method="GOTO",
                     submit_on_change=True,
