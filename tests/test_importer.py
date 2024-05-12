@@ -1,5 +1,3 @@
-import pytest
-
 from pochurl.domain import GivenElement
 from pochurl.importer import csv_to_dicts, dict_to_elements
 
@@ -22,19 +20,20 @@ https://example3.py,name3,python
     assert csv_to_dicts(given) == intermediate
 
 
-@pytest.mark.skip(reason="not implemented")
 def test_add_several_items_final():
     intermediate = [
         {"url": "https://example1.py", "name": "name1", "tags": "test"},
         {"url": "https://example2.py", "name": "name2", "tags": "test"},
         {"url": "https://example3.py", "name": "name3", "tags": "python"},
     ]
+    result, rejected = dict_to_elements(intermediate)
     expected = [
         GivenElement(url="https://example1.py", name="name1", tags={"test"}),
         GivenElement(url="https://example2.py", name="name2", tags={"test"}),
         GivenElement(url="https://example3.py", name="name3", tags={"python"}),
     ]
-    assert dict_to_elements(intermediate) == expected
+    assert result == expected
+    assert not rejected
 
 
 def test_add_special_items_intermediate():
@@ -51,19 +50,20 @@ def test_add_special_items_intermediate():
     assert csv_to_dicts(given) == intermediate
 
 
-@pytest.mark.skip(reason="not implemented")
 def test_add_special_items_final():
     intermediate = [
         {"url": "https://example1.py", "name": "without_tag", "tags": ""},
         {"url": "https://example2.py", "name": "with space", "tags": "with space"},
         {"url": "https://example3.py", "name": "with_several_tags", "tags": "one_tag,two_tag"},
     ]
+    result, rejected = dict_to_elements(intermediate)
     expected = [
         GivenElement(url="https://example1.py", name="without_tag", tags=set()),
         GivenElement(url="https://example2.py", name="with space", tags={"with space"}),
         GivenElement(url="https://example3.py", name="with_several_tags", tags={"one_tag", "two_tag"}),
     ]
-    assert dict_to_elements(intermediate) == expected
+    assert result == expected
+    assert not rejected
 
 
 def test_add_items_with_error_intermediate():
@@ -80,15 +80,16 @@ def test_add_items_with_error_intermediate():
     assert csv_to_dicts(given) == intermediate
 
 
-@pytest.mark.skip(reason="not implemented")
 def test_add_items_with_error_final():
     intermediate = [
         {"url": "https://example1.py", "name": "name1", "tags": "test"},
         {"url": "not_an_url", "name": "name2", "tags": "test"},
         {"url": "https://example3.py", "name": "name3", "tags": "python"},
     ]
+    result, rejected = dict_to_elements(intermediate)
     expected = [
         GivenElement(url="https://example1.py", name="name1", tags={"test"}),
         GivenElement(url="https://example3.py", name="name3", tags={"python"}),
     ]
-    assert dict_to_elements(intermediate) == expected
+    assert result == expected
+    assert rejected == [intermediate[1]]
