@@ -1,0 +1,23 @@
+meta {
+  name: API - Add element
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://127.0.0.1:8000/api/element?storage=tinydb
+  body: json
+  auth: none
+}
+
+query {
+  storage: tinydb
+}
+
+body:json {
+  {
+    "url": "https://example.com/",
+    "name": "string",
+    "tags": []
+  }
+}

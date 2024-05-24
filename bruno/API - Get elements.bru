@@ -1,0 +1,15 @@
+meta {
+  name: API - Get elements
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://127.0.0.1:8000/api/elements?storage=tinydb
+  body: none
+  auth: none
+}
+
+query {
+  storage: tinydb
+}
