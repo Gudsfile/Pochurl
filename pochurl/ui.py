@@ -33,13 +33,12 @@ def elements_list():
 
 
 @router.get("/", response_model=FastUI, response_model_exclude_none=True)
-def show_items(page: int = 1, tag: str | None = None) -> List[AnyComponent]:
+def show_items(page: int = 1, tags: str | None = None) -> List[AnyComponent]:
+    # FastAPI does not support `tags List[str]` param
     elements = elements_list()
     page_size = 10
-    filter_form_initial = {}
-    if tag:
-        elements = [element for element in elements if tag in element.tags]
-        filter_form_initial["tag"] = {"value": tag, "label": tag}
+    if tags:
+        elements = select_by_tags(elements, set(tags))
     return [
         c.Page(
             components=[
@@ -109,3 +108,11 @@ def add_item(form: Annotated[GivenElementForm, fastui_form(GivenElementForm)]) -
     element = GivenElement(url=form.url, name=form.name, tags=set(form.tag) if form.tag else set())
     api.add_item(element, db)
     return [c.FireEvent(event=PageEvent(name=PAGE_EVENT_TO_ADD, clear=True)), c.FireEvent(event=PageEvent(name=PAGE_EVENT_ADDED))]
+
+
+def has_desired_tag(element_tags: set[str], desired_tags: set[str]):
+    return len(element_tags & desired_tags) > 0
+
+
+def select_by_tags(elements: list[SavedElement], desired_tags: set[str]):
+    return [element for element in elements if has_desired_tag(element.tags, desired_tags)]
